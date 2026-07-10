@@ -4,7 +4,7 @@ public class ProductManager {
     HashMap<String, HashMap<String, Integer>> groups;
 
 
-    ProductManager(){};
+    ProductManager(){}
 
     public void add(String groupID, String productID, int quantity){
         groups.putIfAbsent(groupID, new HashMap<>());
