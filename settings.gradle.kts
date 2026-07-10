@@ -1,0 +1,1 @@
+rootProject.name = "mvideo_internship_java"
