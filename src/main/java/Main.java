@@ -10,19 +10,24 @@ public class Main {
         String inputFileName = args[0];
         String outputFileName = args[1];
 
-        try (FileController fileController = new FileController(inputFileName, outputFileName)) {
-
+        try (FileController fileController = new FileController(inputFileName, outputFileName); Logger logger = new Logger()) {
             ProductManager pm = new ProductManager();
+            pm.attachLogger(logger);
 
             String query;
             while ((query = fileController.getQuery()) != null) {
                 String[] params = query.split(";");
-                if (params.length == 2) {
-                    pm.sell(params[0], Integer.parseInt(params[1]));
-                } else if (params.length == 3) {
-                    pm.add(params[0], params[1], Integer.parseInt(params[2]));
-                } else {
-
+                try {
+                    if (params.length == 2) {
+                        pm.sell(params[0], Integer.parseInt(params[1]));
+                    } else if (params.length == 3) {
+                        pm.add(params[0], params[1], Integer.parseInt(params[2]));
+                    } else {
+                        throw new RuntimeException("Invalid query");
+                    }
+                }
+                catch (RuntimeException e){
+                    logger.logErr(e.getMessage());
                 }
             }
 

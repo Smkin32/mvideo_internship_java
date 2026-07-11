@@ -1,8 +1,8 @@
 import java.io.*;
 
 public class FileController implements AutoCloseable {
-    BufferedReader inputFileReader;
-    BufferedWriter outputFileWriter;
+    private BufferedReader inputFileReader;
+    private BufferedWriter outputFileWriter;
 
     FileController(String inputFileName, String outputFileName) throws IOException {
         inputFileReader = new BufferedReader(new FileReader(new File(inputFileName)));

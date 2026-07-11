@@ -1,53 +1,70 @@
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.NoSuchElementException;
 import java.util.TreeSet;
 
 public class ProductManager {
-    HashMap<String, HashMap<String, Integer>> groups;
+     private HashMap<String, HashMap<String, Integer>> groups;
 
+     private Logger logger;
 
     ProductManager(){
         groups = new HashMap<>();
     }
 
+    public void attachLogger(Logger logger){
+        this.logger = logger;
+    }
+
     public void add(String groupID, String productID, int quantity){
         groups.putIfAbsent(groupID, new HashMap<>());
         groups.get(groupID).put(productID, groups.get(groupID).getOrDefault(productID, 0) + quantity);
+        logger.logAdd(groupID, productID, quantity);
     }
 
     public void sell(String groupID, int quantity) {
         int accumulator = quantity;
-        Map<String, Integer> productsMap = groups.get(groupID);
-        TreeSet<String> sortedProducts = new TreeSet<>(productsMap.keySet());
+        Map<String, Integer> productsMap;
 
-        int countNonZero = 0;
-        for (String productID : sortedProducts) {
-            if (productsMap.get(productID) > 0) {
-                countNonZero++;
+        try {
+            productsMap = groups.get(groupID);
+            if (productsMap == null || productsMap.isEmpty()){
+                throw new NoSuchElementException("No suitable products found");
             }
         }
-        while (accumulator > 0) {
-            if (countNonZero == 0) {
-                String highestRankProduct = sortedProducts.first();
-                productsMap.put(highestRankProduct, productsMap.get(highestRankProduct) - accumulator);
-                accumulator = 0;
-            } else {
-                for (String productID : sortedProducts) {
-                    if (accumulator == 0){
-                        break;
-                    }
-                    if (productsMap.get(productID) > 0) {
-                        int toRemove = productsMap.get(productID);
-                        if (toRemove > accumulator) {
-                            toRemove = accumulator;
-                        }
-                        productsMap.put(productID, productsMap.get(productID) - toRemove);
-                        accumulator -= toRemove;
-                        countNonZero--;
-                    }
+        catch (NoSuchElementException e){
+            logger.logErr(e.getMessage());
+            throw new RuntimeException(e);
+        }
+
+        TreeSet<String> sortedProducts = new TreeSet<>(productsMap.keySet());
+
+        for (String productId : sortedProducts){
+            if (productsMap.get(productId) > 0){
+                int toRemove;
+                if (productsMap.get(productId) > accumulator){
+                    toRemove = accumulator;
+                    productsMap.put(productId, productsMap.get(productId) - toRemove);
+                    accumulator = 0;
+                    logger.logSell(groupID, productId, toRemove);
+                }
+                else {
+                    toRemove = productsMap.get(productId);
+                    productsMap.put(productId, 0);
+                    accumulator -= toRemove;
+                    logger.logSell(groupID, productId, toRemove);
+                }
+
+                if (accumulator == 0){
+                    break;
                 }
             }
+        }
+
+        if (accumulator > 0){
+            String highestRankProduct = sortedProducts.getFirst();
+            productsMap.put(highestRankProduct, -accumulator);
+            logger.logSell(groupID, highestRankProduct, accumulator);
         }
     }
 
