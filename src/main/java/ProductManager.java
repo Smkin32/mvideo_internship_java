@@ -97,4 +97,22 @@ public class ProductManager {
         csv = sb.toString();
         return csv;
     }
+
+    private void tryLogAdd(String groupId, String productId, int quantity){
+        if (logger != null) {
+            logger.logAdd(groupId, productId, quantity);
+        }
+    }
+
+    private void tryLogSell(String groupId, String productId, int quantity){
+        if (logger != null){
+            logger.logSell(groupId, productId, quantity);
+        }
+    }
+
+    private void tryLogErr(String errMsg){
+        if (logger != null){
+            logger.logErr(errMsg);
+        }
+    }
 }
