@@ -1,4 +1,7 @@
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class ProductManager {
     HashMap<String, HashMap<String, Integer>> groups;
@@ -13,8 +16,39 @@ public class ProductManager {
         groups.get(groupID).put(productID, groups.get(groupID).getOrDefault(productID, 0) + quantity);
     }
 
-    public void sell(String groupID, int quantity){
+    public void sell(String groupID, int quantity) {
+        int accumulator = quantity;
+        Map<String, Integer> productsMap = groups.get(groupID);
+        TreeSet<String> sortedProducts = new TreeSet<>(productsMap.keySet());
 
+        int countNonZero = 0;
+        for (String productID : sortedProducts) {
+            if (productsMap.get(productID) > 0) {
+                countNonZero++;
+            }
+        }
+        while (accumulator > 0) {
+            if (countNonZero == 0) {
+                String highestRankProduct = sortedProducts.first();
+                productsMap.put(highestRankProduct, productsMap.get(highestRankProduct) - accumulator);
+                accumulator = 0;
+            } else {
+                for (String productID : sortedProducts) {
+                    if (accumulator == 0){
+                        break;
+                    }
+                    if (productsMap.get(productID) > 0) {
+                        int toRemove = productsMap.get(productID);
+                        if (toRemove > accumulator) {
+                            toRemove = accumulator;
+                        }
+                        productsMap.put(productID, productsMap.get(productID) - toRemove);
+                        accumulator -= toRemove;
+                        countNonZero--;
+                    }
+                }
+            }
+        }
     }
 
     public String generateCSV(){
