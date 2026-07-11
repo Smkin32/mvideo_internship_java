@@ -1,7 +1,9 @@
 MvideoInternshipJava
 ============
 
-Проект для тестового задания
+Проект для тестового задания на Java
+_Версия на kotlin: [тык](https://github.com/Smkin32/mvideo_internship_kotlin)_
+
 
 Допущения в условии
 -------------------------
