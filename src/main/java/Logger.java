@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+// Класс для логирования, закрывает свой файл при закрытии себя
 public class Logger implements AutoCloseable{
     private BufferedWriter loggerWriter;
 

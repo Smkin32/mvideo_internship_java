@@ -1,5 +1,7 @@
 import java.io.*;
 
+
+// Класс для работы с файлами, закрывает их при закрытии себя
 public class FileController implements AutoCloseable {
     private BufferedReader inputFileReader;
     private BufferedWriter outputFileWriter;
