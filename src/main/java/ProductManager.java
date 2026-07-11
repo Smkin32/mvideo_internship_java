@@ -22,7 +22,7 @@ public class ProductManager {
     public void add(String groupID, String productID, int quantity){
         groups.putIfAbsent(groupID, new HashMap<>()); // Если группы еще не было создаем ее HashMap
         groups.get(groupID).put(productID, groups.get(groupID).getOrDefault(productID, 0) + quantity);
-        logger.logAdd(groupID, productID, quantity);
+        tryLogAdd(groupID, productID, quantity);
     }
 
     public void sell(String groupID, int quantity) {
@@ -37,7 +37,7 @@ public class ProductManager {
             }
         }
         catch (NoSuchElementException e){
-            logger.logErr(e.getMessage());
+            tryLogErr(e.getMessage());
             throw new RuntimeException(e);
         }
 
@@ -53,7 +53,7 @@ public class ProductManager {
                     toRemove = accumulator;
                     productsMap.put(productId, productsMap.get(productId) - toRemove);
                     accumulator = 0;
-                    logger.logSell(groupID, productId, toRemove);
+                    tryLogSell(groupID, productId, toRemove);
                 }
                 // Если товаров одного типа меньше чем нужно продать
                 else {
@@ -61,7 +61,7 @@ public class ProductManager {
                     toRemove = productsMap.get(productId);
                     productsMap.put(productId, 0);
                     accumulator -= toRemove;
-                    logger.logSell(groupID, productId, toRemove);
+                    tryLogSell(groupID, productId, toRemove);
                 }
 
                 // Если распродали сколько надо выходим
@@ -77,7 +77,7 @@ public class ProductManager {
             // То берем товар высший по рангу и записываем отрицательное кол-во (которое осталось продать)
             String highestRankProduct = sortedProducts.getFirst();
             productsMap.put(highestRankProduct, -accumulator);
-            logger.logSell(groupID, highestRankProduct, accumulator);
+            tryLogSell(groupID, highestRankProduct, accumulator);
         }
     }
 
