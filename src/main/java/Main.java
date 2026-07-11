@@ -1,7 +1,7 @@
 import java.io.*;
 
 public class Main {
-    static void main(String[] args) throws IOException {
+    static void main(String[] args) {
         if (args.length != 2){
             System.err.println("Invalid args");
             System.exit(1);
@@ -10,27 +10,25 @@ public class Main {
         String inputFileName = args[0];
         String outputFileName = args[1];
 
-        ProductManager pm = new ProductManager();
+        try (FileController fileController = new FileController(inputFileName, outputFileName)) {
 
-        File inputFile = new File(inputFileName);
-        BufferedReader inputFileReader = new BufferedReader(new FileReader(inputFile));
-        String query;
-        while ((query = inputFileReader.readLine()) != null){
-            String[] params = query.split(" ");
-            if (params.length == 2){
-                pm.sell(params[0], Integer.parseInt(params[1]));
-            } else if (params.length == 3) {
-                pm.add(params[0], params[1], Integer.parseInt(params[2]));
-            }
-            else {
+            ProductManager pm = new ProductManager();
 
+            String query;
+            while ((query = fileController.getQuery()) != null) {
+                String[] params = query.split(";");
+                if (params.length == 2) {
+                    pm.sell(params[0], Integer.parseInt(params[1]));
+                } else if (params.length == 3) {
+                    pm.add(params[0], params[1], Integer.parseInt(params[2]));
+                } else {
+
+                }
             }
+
+            fileController.writeResult(pm.generateCSV());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-
-        inputFileReader.close();
-
-        BufferedWriter outputFileWriter = new BufferedWriter(new FileWriter(outputFileName));
-        outputFileWriter.write(pm.generateCSV());
-        outputFileWriter.close();
     }
 }

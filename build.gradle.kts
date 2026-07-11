@@ -3,6 +3,10 @@ plugins {
     id("application")
 }
 
+application {
+    mainClass.set("Main")
+}
+
 
 group = "miet.smker32"
 version = "1.0-SNAPSHOT"
